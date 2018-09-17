@@ -130,4 +130,5 @@
         settings:units="sp"
         android:defaultValue="18"
         android:persistent="false" />
+
 </PreferenceScreen>
