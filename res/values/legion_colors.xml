@@ -10,8 +10,22 @@
      See the License for the specific language governing permissions and
      limitations under the License.
 -->
-
 <resources>
+
+    <!-- Base attributes available to CustomSeekBarPreference. -->
+    <declare-styleable name="CustomSeekBarPreference">
+        <attr name="interval" format="integer" />
+        <attr name="showSign" format="boolean" />
+        <attr name="units" format="string|reference" />
+        <attr name="continuousUpdates" format="boolean" />
+        <attr name="defaultText" format="string|reference" />
+    </declare-styleable>
+
+    <!-- Value to pass to callback when restore button is pressed -->
+    <declare-styleable name="ColorPreference">
+        <attr name="defaultColorValue" format="integer" />
+    </declare-styleable>
+
     <!-- FOD icon picker-->
     <color name="fod_item_background_stroke_color">#d6d6d6</color>
 </resources>
