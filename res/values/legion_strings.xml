@@ -949,6 +949,10 @@
     <!-- QQS brightness slider -->
     <string name="qqs_brightness_slider_title">Quick Qs Brightness slider</string>
 
+    <!-- Heads up for music -->
+    <string name="show_media_heads_up_title">Show media heads up</string>
+    <string name="show_media_heads_up_summary">Show media heads up when a new track is played, if the player is not already in foreground</string>
+
     <!-- Brightness buttons -->
     <string name="qs_show_brightness_buttons_title">Brightness control buttons</string>
     <string name="qs_show_brightness_buttons_summary">Show buttons beside the brightness slider to adjust brightness</string>
