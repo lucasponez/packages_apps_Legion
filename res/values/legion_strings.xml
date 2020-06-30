@@ -912,4 +912,9 @@
     <string name="qstile_circleoutline">CircleOutline</string>
     <string name="qstile_neon">Neon Light</string>
     <string name="qstile_triangle">Triangle</string>
+
+    <!-- Qs Tile Icon Bright-Dark -->
+    <string name="qs_icon_primary_title">Qs Tile Icon Bright|Dark</string>
+    <string name="qs_icon_primary_summary">Make Qs Icon Bright-Dark if gradient tint enabled</string>
+
 </resources>
