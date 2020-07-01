@@ -38,10 +38,6 @@
             android:title="@string/theme_customization_sysui_icon_title"/>
 
 	<ListPreference
-	    android:key="android.theme.customization.pill_gesture"
-            android:title="@string/theme_customization_pill_gesture_title"/>
-
-	<ListPreference
 	    android:key="android.theme.customization.statusbar_height"
             android:title="@string/theme_customization_statusbar_height_title"/>
 
@@ -49,53 +45,6 @@
 	    android:key="android.theme.customization.ui_radius"
             android:title="@string/theme_customization_ui_radius_title"/>
 
-	<ListPreference
-  	    android:key="android.theme.customization.ui_radius_vol"
-            android:title="@string/theme_customization_ui_radius_vol_title"/>
-
-        <com.legion.settings.preference.SystemSettingSwitchPreference
-            android:key="qs_blur"
-            android:title="@string/blur_quicksettings"
-            android:summary="@string/blur_quicksettings_subtitle"
-            android:defaultValue="true" />
-
-	<com.legion.settings.preference.SystemSettingSeekBarPreference
-	    android:key="qs_blur_alpha"
-            android:title="@string/qs_blur_alpha_title"
-            android:summary="@string/qs_blur_alpha_summary"
-            android:max="100"
-            settings:min="1"
-            settings:units="%"
-            android:persistent="false"
-            android:dependency="qs_blur" />
-
-	<com.legion.settings.preference.SystemSettingSeekBarPreference
-	    android:key="qs_blur_intensity"
-            android:title="@string/qs_blur_intensity_title"
-            android:summary="@string/qs_blur_intensity_summary"
-            android:max="100"
-            settings:min="1"
-            settings:units="%"
-            android:persistent="false"
-            android:dependency="qs_blur" />
-
-    <com.legion.settings.preference.SystemSettingListPreference
-            android:key="qs_panel_bg_use_new_tint"
-            android:title="@string/qs_bg_use_new_tint"
-            android:dialogTitle="@string/qs_bg_use_new_tint" 
-            android:entries="@array/qs_tint_entries" 
-            android:entryValues="@array/qs_tint_values" 
-            android:summary="%s"
-            android:defaultValue="1" />
-
-    <com.legion.settings.preference.SystemSettingListPreference 
-            android:key="qs_label_use_new_tint" 
-            android:title="@string/qs_label_use_new_tint" 
-            android:dialogTitle="@string/qs_label_use_new_tint" 
-            android:entries="@array/qs__label_tint_entries" 
-            android:entryValues="@array/qs_label_tint_values" 
-            android:summary="%s"
-            android:defaultValue="1" />
     </PreferenceCategory>
 
 </PreferenceScreen>
