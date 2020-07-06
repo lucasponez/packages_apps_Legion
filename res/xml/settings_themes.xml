@@ -69,15 +69,6 @@
          android:summary="@string/corners_summary"
          android:fragment="com.legion.settings.RoundedCornersSettings" />
 
-    <com.legion.settings.preference.SystemSettingListPreference
-        android:key="switch_style"
-        android:title="@string/switch_style_title"
-        android:dialogTitle="@string/switch_style_title"
-        android:entries="@array/switch_style_entries"
-        android:entryValues="@array/switch_style_values"
-        android:summary="%s"
-        android:defaultValue="0" />
-
     <PreferenceCategory
         android:key="qs_tweaks_category"
         android:title="QS Tweaks">
