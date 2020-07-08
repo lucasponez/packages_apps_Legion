@@ -59,6 +59,9 @@ public class Themes extends SettingsPreferenceFragment implements
     private static final String GRADIENT_COLOR_PROP = "persist.sys.theme.gradientcolor";
     private static final String PREF_THEME_SWITCH = "theme_switch";
     private static final String QS_HEADER_STYLE = "qs_header_style";
+    private static final String KEY_QS_PANEL_ALPHA = "qs_panel_alpha";
+    private static final String QS_BLUR_ALPHA = "qs_blur_alpha";
+    private static final String QS_BLUR_INTENSITY = "qs_blur_intensity";
     private static final int MENU_RESET = Menu.FIRST;
 
     static final int DEFAULT = 0xff1a73e8;
@@ -74,6 +77,9 @@ public class Themes extends SettingsPreferenceFragment implements
     private ColorPickerPreference mGradientColor;
     private ListPreference mThemeSwitch;
     private ListPreference mQsHeaderStyle;
+    private CustomSeekBarPreference mQsPanelAlpha;
+    private CustomSeekBarPreference mQsBlurAlpha;
+    private CustomSeekBarPreference mQsBlurIntensity;
 
     @Override
     public void onCreate(Bundle icicle) {
@@ -92,6 +98,9 @@ public class Themes extends SettingsPreferenceFragment implements
         setupGradientPref();
         setupThemeSwitchPref();
         getQsHeaderStylePref();
+	getQsPanelAlphaPref();
+	getQsBlurAlphaPref();
+	getQsBlurIntenPref();
         setHasOptionsMenu(true);
     }
 
@@ -117,6 +126,24 @@ public class Themes extends SettingsPreferenceFragment implements
 			    Settings.System.QS_HEADER_STYLE, Integer.valueOf(value));
             int newIndex = mQsHeaderStyle.findIndexOfValue(value);
             mQsHeaderStyle.setSummary(mQsHeaderStyle.getEntries()[newIndex]);
+	    return true;
+	} else if (preference == mQsPanelAlpha) {
+	    int bgAlpha = (Integer) objValue;
+	    int trueValue = (int) (((double) bgAlpha / 100) * 255);
+	    Settings.System.putInt(getContentResolver(),
+		    Settings.System.QS_PANEL_BG_ALPHA, trueValue);
+	    return true;
+	} else if (preference == mQsBlurAlpha) {
+	    int value = (Integer) objValue;
+            Settings.System.putInt(getContentResolver(),
+                    Settings.System.QS_BLUR_ALPHA, value);
+	return true;
+	} else if (preference == mQsBlurIntensity) {
+	    int valueInt = (Integer) objValue;
+            Settings.System.putInt(getContentResolver(),
+                    Settings.System.QS_BLUR_INTENSITY, valueInt);
+	return true;
+
         } else if (preference == mThemeSwitch) {
             String theme_switch = (String) objValue;
             final Context context = getContext();
@@ -250,6 +277,27 @@ public class Themes extends SettingsPreferenceFragment implements
         mQsHeaderStyle.setOnPreferenceChangeListener(this);
     }
 
+    private void getQsPanelAlphaPref() {
+	mQsPanelAlpha = (CustomSeekBarPreference) findPreference(KEY_QS_PANEL_ALPHA);
+        int qsPanelAlpha = Settings.System.getInt(getActivity().getContentResolver(),
+                Settings.System.QS_PANEL_BG_ALPHA, 255);
+        mQsPanelAlpha.setValue((int)(((double) qsPanelAlpha / 255) * 100));
+        mQsPanelAlpha.setOnPreferenceChangeListener(this);
+    }
+    private void getQsBlurAlphaPref() {
+	mQsBlurAlpha = (CustomSeekBarPreference) findPreference(QS_BLUR_ALPHA);
+        int qsBlurAlpha = Settings.System.getIntForUser(getActivity().getContentResolver(),
+                Settings.System.QS_BLUR_ALPHA, 100, UserHandle.USER_CURRENT);
+        mQsBlurAlpha.setValue(qsBlurAlpha);
+        mQsBlurAlpha.setOnPreferenceChangeListener(this);
+    }
+    private void getQsBlurIntenPref() {
+	mQsBlurIntensity = (CustomSeekBarPreference) findPreference(QS_BLUR_INTENSITY);
+        int qsBlurIntensity = Settings.System.getIntForUser(getActivity().getContentResolver(),
+                Settings.System.QS_BLUR_INTENSITY, 100, UserHandle.USER_CURRENT);
+        mQsBlurIntensity.setValue(qsBlurIntensity);
+	mQsBlurIntensity.setOnPreferenceChangeListener(this);
+    }
     private void setupThemeSwitchPref() {
         mThemeSwitch = (ListPreference) findPreference(PREF_THEME_SWITCH);
         mThemeSwitch.setOnPreferenceChangeListener(this);
