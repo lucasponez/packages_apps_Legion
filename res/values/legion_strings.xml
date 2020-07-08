@@ -436,6 +436,7 @@
     <string name="theme_type_du_pitchblack">Pitch black</string> 
     <string name="theme_type_material_ocean">Material Ocean</string>
     <string name="theme_type_xtended_clear">Xtended Clear</string>
+    <string name="theme_type_style_mizu">Mizu</string>
 
     <!-- LockScreen UI -->
     <string name="lockscreen_ui_title">Lockscreen UI</string>
