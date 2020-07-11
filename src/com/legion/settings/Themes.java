@@ -2,11 +2,13 @@ package com.legion.settings;
 
 import com.android.internal.logging.nano.MetricsProto;
 
+import static android.os.UserHandle.USER_SYSTEM;
+
 import android.app.Activity;
 import android.app.AlertDialog;
-import java.util.Locale;
 import android.app.Dialog;
 import android.app.DialogFragment;
+import android.app.UiModeManager;
 import android.content.Context;
 import android.content.ContentResolver;
 import android.content.DialogInterface;
@@ -14,17 +16,16 @@ import android.content.res.Resources;
 import android.content.om.IOverlayManager;
 import android.content.om.OverlayInfo;
 import android.graphics.Color;
-import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.os.RemoteException;
 import android.os.SystemProperties;
 import android.os.ServiceManager;
 import android.os.UserHandle;
+import androidx.fragment.app.Fragment;
 import androidx.preference.ListPreference;
 import androidx.preference.Preference;
-import androidx.preference.PreferenceScreen;
 import androidx.preference.PreferenceManager;
+import androidx.preference.PreferenceScreen;
 import androidx.preference.Preference.OnPreferenceChangeListener;
 import androidx.preference.SwitchPreference;
 import android.provider.Settings;
@@ -35,23 +36,30 @@ import android.view.MenuInflater;
 import com.android.settings.R;
 
 import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Objects;
-
-import com.legion.settings.preference.CustomSeekBarPreference;
-import com.legion.settings.preference.SystemSettingSeekBarPreference;
-import com.legion.settings.preference.SystemSettingEditTextPreference;
-import com.android.settings.SettingsPreferenceFragment;
-import net.margaritov.preference.colorpicker.ColorPickerPreference;
 
 import com.android.internal.util.legion.ThemesUtils;
 import com.android.internal.util.legion.LegionUtils;
+import com.android.settings.SettingsPreferenceFragment;
+import com.android.settings.dashboard.DashboardFragment;
+import android.provider.SearchIndexableResource;
+import com.android.settings.search.BaseSearchIndexProvider;
+import com.android.settings.search.Indexable;
+import com.android.settingslib.search.SearchIndexable;
+import com.android.settings.display.OverlayCategoryPreferenceController;
+import com.android.settingslib.core.AbstractPreferenceController;
+import com.android.settingslib.core.lifecycle.Lifecycle;
+import com.legion.settings.preference.CustomSeekBarPreference;
+import com.legion.settings.preference.SystemSettingSwitchPreference;
+import net.margaritov.preference.colorpicker.ColorPickerPreference;
 
-import static android.os.UserHandle.USER_SYSTEM;
-import android.app.UiModeManager;
+public class Themes extends DashboardFragment implements
+        OnPreferenceChangeListener, Indexable {
 
-public class Themes extends SettingsPreferenceFragment implements
-        OnPreferenceChangeListener {
+    private static final String TAG = "Themes";
 
     private static final String ACCENT_COLOR = "accent_color";
     private static final String ACCENT_COLOR_PROP = "persist.sys.theme.accentcolor";
@@ -62,14 +70,13 @@ public class Themes extends SettingsPreferenceFragment implements
     private static final String KEY_QS_PANEL_ALPHA = "qs_panel_alpha";
     private static final String QS_BLUR_ALPHA = "qs_blur_alpha";
     private static final String QS_BLUR_INTENSITY = "qs_blur_intensity";
+    private static final String CUSTOM_THEME_BROWSE = "theme_select_activity";
+    static final int DEFAULT_QS_PANEL_COLOR = 0xffffffff;
     private static final int MENU_RESET = Menu.FIRST;
 
     static final int DEFAULT = 0xff1a73e8;
 
-    private static final String CUSTOM_THEME_BROWSE = "theme_select_activity";
-
     private Preference mThemeBrowse;
-
     private IOverlayManager mOverlayService;
     private UiModeManager mUiModeManager;
 
@@ -82,26 +89,56 @@ public class Themes extends SettingsPreferenceFragment implements
     private CustomSeekBarPreference mQsBlurIntensity;
 
     @Override
+    protected String getLogTag() {
+        return TAG;
+    }
+
+    @Override
+    protected int getPreferenceScreenResId() {
+        return R.xml.settings_themes;
+    }
+
+    @Override
     public void onCreate(Bundle icicle) {
         super.onCreate(icicle);
-
-        addPreferencesFromResource(R.xml.settings_themes);
 
 	mThemeBrowse = findPreference(CUSTOM_THEME_BROWSE);
 	mThemeBrowse.setEnabled(isBrowseThemesAvailable());
 
-	mUiModeManager = getContext().getSystemService(UiModeManager.class);
+        mUiModeManager = getContext().getSystemService(UiModeManager.class);
 
         mOverlayService = IOverlayManager.Stub
                 .asInterface(ServiceManager.getService(Context.OVERLAY_SERVICE));
+
         setupAccentPref();
         setupGradientPref();
         setupThemeSwitchPref();
         getQsHeaderStylePref();
-	getQsPanelAlphaPref();
-	getQsBlurAlphaPref();
-	getQsBlurIntenPref();
+        getQsPanelAlphaPref();
+        getQsBlurAlphaPref();
+        getQsBlurIntenPref();
         setHasOptionsMenu(true);
+    }
+
+    @Override
+    protected List<AbstractPreferenceController> createPreferenceControllers(Context context) {
+        return buildPreferenceControllers(context, getSettingsLifecycle(), this);
+    }
+
+    private static List<AbstractPreferenceController> buildPreferenceControllers(
+            Context context, Lifecycle lifecycle, Fragment fragment) {
+        final List<AbstractPreferenceController> controllers = new ArrayList<>();
+        controllers.add(new OverlayCategoryPreferenceController(context,
+                "android.theme.customization.font"));
+        controllers.add(new OverlayCategoryPreferenceController(context,
+                "android.theme.customization.adaptive_icon_shape"));
+        controllers.add(new OverlayCategoryPreferenceController(context,
+                "android.theme.customization.icon_pack.android"));
+	controllers.add(new OverlayCategoryPreferenceController(context,
+		"android.theme.customization.statusbar_height"));
+	controllers.add(new OverlayCategoryPreferenceController(context,
+		"android.theme.customization.ui_radius"));
+        return controllers;
     }
 
     @Override
@@ -120,46 +157,51 @@ public class Themes extends SettingsPreferenceFragment implements
             int color = (Integer) objValue;
             String hexColor = String.format("%08X", (0xFFFFFFFF & color));
             SystemProperties.set(GRADIENT_COLOR_PROP, hexColor);
+            try {
+                 mOverlayService.reloadAndroidAssets(UserHandle.USER_CURRENT);
+                 mOverlayService.reloadAssets("com.android.settings", UserHandle.USER_CURRENT);
+                 mOverlayService.reloadAssets("com.android.systemui", UserHandle.USER_CURRENT);
+             } catch (RemoteException ignored) {
+             }
         } else if (preference == mQsHeaderStyle) {
             String value = (String) objValue;
             Settings.System.putInt(getActivity().getContentResolver(),
 			    Settings.System.QS_HEADER_STYLE, Integer.valueOf(value));
             int newIndex = mQsHeaderStyle.findIndexOfValue(value);
             mQsHeaderStyle.setSummary(mQsHeaderStyle.getEntries()[newIndex]);
-	    return true;
-	} else if (preference == mQsPanelAlpha) {
-	    int bgAlpha = (Integer) objValue;
-	    int trueValue = (int) (((double) bgAlpha / 100) * 255);
-	    Settings.System.putInt(getContentResolver(),
-		    Settings.System.QS_PANEL_BG_ALPHA, trueValue);
-	    return true;
-	} else if (preference == mQsBlurAlpha) {
-	    int value = (Integer) objValue;
+            return true;
+        } else if (preference == mQsPanelAlpha) {
+            int bgAlpha = (Integer) objValue;
+            int trueValue = (int) (((double) bgAlpha / 100) * 255);
+            Settings.System.putInt(getContentResolver(),
+                    Settings.System.QS_PANEL_BG_ALPHA, trueValue);
+            return true;
+        } else if (preference == mQsBlurAlpha) {
+            int value = (Integer) objValue;
             Settings.System.putInt(getContentResolver(),
                     Settings.System.QS_BLUR_ALPHA, value);
-	return true;
-	} else if (preference == mQsBlurIntensity) {
-	    int valueInt = (Integer) objValue;
+            return true;
+        } else if (preference == mQsBlurIntensity) {
+            int valueInt = (Integer) objValue;
             Settings.System.putInt(getContentResolver(),
                     Settings.System.QS_BLUR_INTENSITY, valueInt);
-	return true;
-
+            return true;
         } else if (preference == mThemeSwitch) {
             String theme_switch = (String) objValue;
             final Context context = getContext();
             switch (theme_switch) {
                 case "1":
                     handleBackgrounds(false, context, UiModeManager.MODE_NIGHT_NO, ThemesUtils.SOLARIZED_DARK);
-		    handleBackgrounds(false, context, UiModeManager.MODE_NIGHT_NO, ThemesUtils.BAKED_GREEN);
+                    handleBackgrounds(false, context, UiModeManager.MODE_NIGHT_NO, ThemesUtils.BAKED_GREEN);
                     handleBackgrounds(false, context, UiModeManager.MODE_NIGHT_NO, ThemesUtils.CHOCO_X);
-		    handleBackgrounds(false, context, UiModeManager.MODE_NIGHT_NO, ThemesUtils.PITCH_BLACK);
+                    handleBackgrounds(false, context, UiModeManager.MODE_NIGHT_NO, ThemesUtils.PITCH_BLACK);
                     handleBackgrounds(false, context, UiModeManager.MODE_NIGHT_NO, ThemesUtils.DARK_GREY);
                     handleBackgrounds(false, context, UiModeManager.MODE_NIGHT_NO, ThemesUtils.MATERIAL_OCEAN);
                     handleBackgrounds(false, context, UiModeManager.MODE_NIGHT_NO, ThemesUtils.XTENDED_CLEAR);
                     break;
                 case "2":
                     handleBackgrounds(false, context, UiModeManager.MODE_NIGHT_YES, ThemesUtils.SOLARIZED_DARK);
-		    handleBackgrounds(false, context, UiModeManager.MODE_NIGHT_YES, ThemesUtils.BAKED_GREEN);
+                    handleBackgrounds(false, context, UiModeManager.MODE_NIGHT_YES, ThemesUtils.BAKED_GREEN);
                     handleBackgrounds(false, context, UiModeManager.MODE_NIGHT_YES, ThemesUtils.CHOCO_X);
                     handleBackgrounds(false, context, UiModeManager.MODE_NIGHT_YES, ThemesUtils.PITCH_BLACK);
                     handleBackgrounds(false, context, UiModeManager.MODE_NIGHT_YES, ThemesUtils.DARK_GREY);
@@ -168,7 +210,7 @@ public class Themes extends SettingsPreferenceFragment implements
                     break;
                 case "3":
                     handleBackgrounds(true, context, UiModeManager.MODE_NIGHT_YES, ThemesUtils.SOLARIZED_DARK);
-		    handleBackgrounds(false, context, UiModeManager.MODE_NIGHT_YES, ThemesUtils.BAKED_GREEN);
+                    handleBackgrounds(false, context, UiModeManager.MODE_NIGHT_YES, ThemesUtils.BAKED_GREEN);
                     handleBackgrounds(false, context, UiModeManager.MODE_NIGHT_YES, ThemesUtils.CHOCO_X);
                     handleBackgrounds(false, context, UiModeManager.MODE_NIGHT_YES, ThemesUtils.PITCH_BLACK);
                     handleBackgrounds(false, context, UiModeManager.MODE_NIGHT_YES, ThemesUtils.DARK_GREY);
@@ -193,7 +235,7 @@ public class Themes extends SettingsPreferenceFragment implements
                     handleBackgrounds(false, context, UiModeManager.MODE_NIGHT_YES, ThemesUtils.MATERIAL_OCEAN);
                     handleBackgrounds(false, context, UiModeManager.MODE_NIGHT_YES, ThemesUtils.XTENDED_CLEAR);
                     break;
-		case "6":
+                case "6":
                     handleBackgrounds(false, context, UiModeManager.MODE_NIGHT_YES, ThemesUtils.SOLARIZED_DARK);
                     handleBackgrounds(false, context, UiModeManager.MODE_NIGHT_YES, ThemesUtils.BAKED_GREEN);
                     handleBackgrounds(false, context, UiModeManager.MODE_NIGHT_YES, ThemesUtils.CHOCO_X);
@@ -202,7 +244,7 @@ public class Themes extends SettingsPreferenceFragment implements
                     handleBackgrounds(false, context, UiModeManager.MODE_NIGHT_YES, ThemesUtils.MATERIAL_OCEAN);
                     handleBackgrounds(false, context, UiModeManager.MODE_NIGHT_YES, ThemesUtils.XTENDED_CLEAR);
                     break;
-		 case "7":
+                case "7":
                     handleBackgrounds(false, context, UiModeManager.MODE_NIGHT_YES, ThemesUtils.SOLARIZED_DARK);
                     handleBackgrounds(false, context, UiModeManager.MODE_NIGHT_YES, ThemesUtils.BAKED_GREEN);
                     handleBackgrounds(false, context, UiModeManager.MODE_NIGHT_YES, ThemesUtils.CHOCO_X);
@@ -211,7 +253,7 @@ public class Themes extends SettingsPreferenceFragment implements
                     handleBackgrounds(false, context, UiModeManager.MODE_NIGHT_YES, ThemesUtils.MATERIAL_OCEAN);
                     handleBackgrounds(false, context, UiModeManager.MODE_NIGHT_YES, ThemesUtils.XTENDED_CLEAR);
                     break;
-		 case "8":
+                case "8":
                     handleBackgrounds(false, context, UiModeManager.MODE_NIGHT_YES, ThemesUtils.SOLARIZED_DARK);
                     handleBackgrounds(false, context, UiModeManager.MODE_NIGHT_YES, ThemesUtils.BAKED_GREEN);
                     handleBackgrounds(false, context, UiModeManager.MODE_NIGHT_YES, ThemesUtils.CHOCO_X);
@@ -247,7 +289,7 @@ public class Themes extends SettingsPreferenceFragment implements
         return pm.resolveActivity(browse, 0) != null;
     }
 
-   private void setupAccentPref() {
+    private void setupAccentPref() {
         mThemeColor = (ColorPickerPreference) findPreference(ACCENT_COLOR);
         String colorVal = SystemProperties.get(ACCENT_COLOR_PROP, "-1");
         int color = "-1".equals(colorVal)
@@ -265,7 +307,7 @@ public class Themes extends SettingsPreferenceFragment implements
                 : Color.parseColor("#" + colorVal);
         mGradientColor.setNewPreviewColor(color);
         mGradientColor.setOnPreferenceChangeListener(this);
-     }
+    }
 
     private void getQsHeaderStylePref() {
         mQsHeaderStyle = (ListPreference) findPreference(QS_HEADER_STYLE);
@@ -278,26 +320,29 @@ public class Themes extends SettingsPreferenceFragment implements
     }
 
     private void getQsPanelAlphaPref() {
-	mQsPanelAlpha = (CustomSeekBarPreference) findPreference(KEY_QS_PANEL_ALPHA);
+        mQsPanelAlpha = (CustomSeekBarPreference) findPreference(KEY_QS_PANEL_ALPHA);
         int qsPanelAlpha = Settings.System.getInt(getActivity().getContentResolver(),
                 Settings.System.QS_PANEL_BG_ALPHA, 255);
         mQsPanelAlpha.setValue((int)(((double) qsPanelAlpha / 255) * 100));
         mQsPanelAlpha.setOnPreferenceChangeListener(this);
     }
+
     private void getQsBlurAlphaPref() {
-	mQsBlurAlpha = (CustomSeekBarPreference) findPreference(QS_BLUR_ALPHA);
+        mQsBlurAlpha = (CustomSeekBarPreference) findPreference(QS_BLUR_ALPHA);
         int qsBlurAlpha = Settings.System.getIntForUser(getActivity().getContentResolver(),
                 Settings.System.QS_BLUR_ALPHA, 100, UserHandle.USER_CURRENT);
         mQsBlurAlpha.setValue(qsBlurAlpha);
         mQsBlurAlpha.setOnPreferenceChangeListener(this);
     }
+
     private void getQsBlurIntenPref() {
-	mQsBlurIntensity = (CustomSeekBarPreference) findPreference(QS_BLUR_INTENSITY);
+        mQsBlurIntensity = (CustomSeekBarPreference) findPreference(QS_BLUR_INTENSITY);
         int qsBlurIntensity = Settings.System.getIntForUser(getActivity().getContentResolver(),
                 Settings.System.QS_BLUR_INTENSITY, 100, UserHandle.USER_CURRENT);
         mQsBlurIntensity.setValue(qsBlurIntensity);
-	mQsBlurIntensity.setOnPreferenceChangeListener(this);
+        mQsBlurIntensity.setOnPreferenceChangeListener(this);
     }
+
     private void setupThemeSwitchPref() {
         mThemeSwitch = (ListPreference) findPreference(PREF_THEME_SWITCH);
         mThemeSwitch.setOnPreferenceChangeListener(this);
@@ -305,11 +350,11 @@ public class Themes extends SettingsPreferenceFragment implements
             mThemeSwitch.setValue("9");
         } else if (LegionUtils.isThemeEnabled("com.android.theme.darkgrey.system")) {
             mThemeSwitch.setValue("7");
-	} else if (LegionUtils.isThemeEnabled("com.android.theme.pitchblack.system")) {
+        } else if (LegionUtils.isThemeEnabled("com.android.theme.pitchblack.system")) {
             mThemeSwitch.setValue("6");
-	} else if (LegionUtils.isThemeEnabled("com.android.theme.materialocean.system")) {
+        } else if (LegionUtils.isThemeEnabled("com.android.theme.materialocean.system")) {
             mThemeSwitch.setValue("8");
-	} else if (LegionUtils.isThemeEnabled("com.android.theme.chocox.system")) {
+        } else if (LegionUtils.isThemeEnabled("com.android.theme.chocox.system")) {
             mThemeSwitch.setValue("5");
         } else if (LegionUtils.isThemeEnabled("com.android.theme.bakedgreen.system")) {
             mThemeSwitch.setValue("4");
@@ -375,7 +420,7 @@ public class Themes extends SettingsPreferenceFragment implements
         handleBackgrounds(false, context, UiModeManager.MODE_NIGHT_NO, ThemesUtils.BAKED_GREEN);
         handleBackgrounds(false, context, UiModeManager.MODE_NIGHT_NO, ThemesUtils.CHOCO_X);
         handleBackgrounds(false, context, UiModeManager.MODE_NIGHT_NO, ThemesUtils.PITCH_BLACK);
-	handleBackgrounds(false, context, UiModeManager.MODE_NIGHT_NO, ThemesUtils.DARK_GREY);
+        handleBackgrounds(false, context, UiModeManager.MODE_NIGHT_NO, ThemesUtils.DARK_GREY);
         handleBackgrounds(false, context, UiModeManager.MODE_NIGHT_NO, ThemesUtils.MATERIAL_OCEAN);
         handleBackgrounds(false, context, UiModeManager.MODE_NIGHT_NO, ThemesUtils.XTENDED_CLEAR);
         setupThemeSwitchPref();
@@ -402,6 +447,25 @@ public class Themes extends SettingsPreferenceFragment implements
     public int getMetricsCategory() {
         return MetricsProto.MetricsEvent.LEGION_SETTINGS;
     }
+
+    public static final SearchIndexProvider SEARCH_INDEX_DATA_PROVIDER =
+            new BaseSearchIndexProvider() {
+                @Override
+                public List<SearchIndexableResource> getXmlResourcesToIndex(Context context,
+                        boolean enabled) {
+                    ArrayList<SearchIndexableResource> result =
+                            new ArrayList<SearchIndexableResource>();
+
+                    SearchIndexableResource sir = new SearchIndexableResource(context);
+                    sir.xmlResId = R.xml.settings_themes;
+                    result.add(sir);
+                    return result;
+                }
+
+                @Override
+                public List<String> getNonIndexableKeys(Context context) {
+                    List<String> keys = super.getNonIndexableKeys(context);
+                    return keys;
+                }
+    };
 }
-
-

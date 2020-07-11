@@ -69,6 +69,26 @@
          android:summary="@string/corners_summary"
          android:fragment="com.legion.settings.RoundedCornersSettings" />
 
+        <ListPreference
+            android:key="android.theme.customization.font"
+            android:title="@string/theme_customization_font_title"/>
+
+        <ListPreference
+            android:key="android.theme.customization.adaptive_icon_shape"
+            android:title="@string/theme_customization_icon_shape_title"/>
+
+        <ListPreference
+            android:key="android.theme.customization.icon_pack.android"
+            android:title="@string/theme_customization_sysui_icon_title"/>
+
+	<ListPreference
+	    android:key="android.theme.customization.statusbar_height"
+            android:title="@string/theme_customization_statusbar_height_title"/>
+
+	<ListPreference
+	    android:key="android.theme.customization.ui_radius"
+            android:title="@string/theme_customization_ui_radius_title"/>
+
     <PreferenceCategory
         android:key="qs_tweaks_category"
         android:title="QS Tweaks">
