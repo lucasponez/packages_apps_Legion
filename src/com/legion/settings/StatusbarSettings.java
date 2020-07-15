@@ -46,6 +46,7 @@ import java.util.List;
 public class StatusbarSettings extends SettingsPreferenceFragment implements OnPreferenceChangeListener, Indexable {
 
     private static final String SHOW_LTE_FOURGEE = "show_lte_fourgee";
+
     private SwitchPreference mShowLteFourGee;
 
     @Override
