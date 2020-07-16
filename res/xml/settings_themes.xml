@@ -207,16 +207,4 @@
 
   </PreferenceCategory>
 
-    <PreferenceCategory
-        android:key="Ui_category"
-        android:title="More UI">
-
-     <Preference
-        android:key="themesui"
-        android:title="@string/themesui_title"
-        android:summary="@string/themesui_summary"
-        android:fragment="com.legion.settings.Themesui" />
-
-  </PreferenceCategory>
-
 </PreferenceScreen>
