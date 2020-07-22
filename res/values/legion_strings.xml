@@ -751,6 +751,13 @@
     <string name="fod_pressed_state_icon">Icon (usually Cyan)</string>
     <string name="fod_pressed_state_icon_white">Icon (White)</string>
     <string name="fod_pressed_state_solid_color">Solid color (usually Green)</string>
+    
+    <!-- Fingerprint authentication vibration -->
+    <string name="ls_unlocking">Unlocking Vibration</string>
+    <string name="fprint_sucess_vib_title">FP authentication vibration</string>
+    <string name="fprint_sucess_vib_summary">Vibrate when fingerprint authentication is successful</string>
+    <string name="fprint_error_vib_title">FP error vibration</string>
+    <string name="fprint_error_vib_summary">Vibrate when fingerprint authentication fails</string>
 
     <!-- Toast Animation -->
     <string name="toast_animation_title">Toast animation</string> <string name="toast_none_animation">None</string> 
