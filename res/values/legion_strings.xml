@@ -133,12 +133,6 @@
     <string name="aggressive_battery_saver_title">Auto-enable on battery saver</string>
     <string name="aggressive_battery_saver_summary">Enable Aggressive Battery automatically when using battery saver</string>
 
-    <!-- Quick Settings brightness slider -->
-    <string name="qs_show_brightness_title">Brightness slider</string>
-    <string name="qs_show_brightness_summary">Show a brightness slider in the quick settings panel</string>
-    <string name="qs_brightness_position_bottom_title">Brightness slider on bottom</string>
-    <string name="qs_brightness_position_bottom_summary">Show a brightness slider on bottom quick settings</string>
-
     <!-- Statusbar Clock -->
     <string name="clock_style_category_title">Clock Settings</string>
     <string name="clock_style_category_summary">Statusbar Clock Settings</string>
@@ -928,4 +922,26 @@
     <string name="theming_settings_dashboard_icons_random_bg_accent">Icon Random Bg Accent</string>
     <string name="theming_settings_dashboard_icons_accent_bg_random">Icon Accent Bg Random</string>
 
+    <!-- Quick Settings brightness slider -->
+    <string name="brightness_slider_config">Brightness Slider Config</string>
+    <string name="qs_brightness_slider_title">Show Brightness slider</string>
+    <string name="qs_brightness_slider_summary">Toggle to show a brightness slider in the qs panel</string>
+    <string name="qs_brightness_position_bottom_title">Brightness slider at bottom</string>
+    <string name="qs_brightness_position_bottom_summary">Show a brightness slider on bottom quick settings</string>
+
+    <!-- Brightness icon-->
+    <string name="brightness_icon_title">Brightness icon</string>
+    <string name="brightness_icon_summary">Show a brightness icon along with the brighness slider to adjust auto-brightness</string>
+
+    <!-- QS Brightness Slider position -->
+    <string name="qs_brightness_slider_hide">Hide</string>
+    <string name="qs_brightness_slider_top">Top</string>
+    <string name="qs_brightness_slider_bottom">Bottom</string>
+
+    <!-- QQS brightness slider -->
+    <string name="qqs_brightness_slider_title">Quick Qs Brightness slider</string>
+
+    <!-- Brightness buttons -->
+    <string name="qs_show_brightness_buttons_title">Brightness control buttons</string>
+    <string name="qs_show_brightness_buttons_summary">Show buttons beside the brightness slider to adjust brightness</string>
 </resources>
