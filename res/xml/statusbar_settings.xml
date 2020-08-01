@@ -25,9 +25,9 @@
          android:fragment="com.legion.settings.NetworkTraffic" />
 
 	<SwitchPreference
-        android:key="show_lte_fourgee"
-        android:title="@string/show_lte_fourgee_title"
-        android:summary="@string/show_lte_fourgee_summary"
+        android:key="show_fourg_icon"
+         android:title="@string/show_fourg_icon_title"
+         android:summary="@string/show_fourg_icon_summary"
         android:defaultValue="false"/>
 
     <Preference
