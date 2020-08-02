@@ -969,4 +969,7 @@
     <string name="qs_clock_font_style_title">Qs Clock Font style</string>
     <string name="qs_clock_font_size_title">Qs Clock Font size</string>
     <string name="qs_clock_color_title">Qs Clock Color</string>
+
+    <string name="qs_settings_button_title">Settings Icon</string> 
+    <string name="qs_settings_button_summary">Disable the settings icon in the footer</string>
 </resources>

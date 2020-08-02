@@ -52,6 +52,12 @@
         android:entryValues="@array/qs_datausage_values"
         android:defaultValue="0" />
 
+    <com.legion.settings.preference.SystemSettingSwitchPreference
+	android:key="setting_button_toggle"
+	android:title="@string/qs_settings_button_title"
+	android:summary="@string/qs_settings_button_summary"
+	android:defaultValue="false" />
+
     <PreferenceCategory 
         android:title="@string/brightness_slider_config">
 
