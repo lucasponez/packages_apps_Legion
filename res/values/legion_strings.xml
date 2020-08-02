@@ -972,4 +972,8 @@
 
     <string name="qs_settings_button_title">Settings Icon</string> 
     <string name="qs_settings_button_summary">Disable the settings icon in the footer</string>
+
+    <string name="qs_show_drag_handle_title">Qs Drag Handle</string> 
+    <string name="qs_show_drag_handle_summary">Show Qs footer handle</string>
+
 </resources>

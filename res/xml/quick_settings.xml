@@ -52,6 +52,12 @@
         android:entryValues="@array/qs_datausage_values"
         android:defaultValue="0" />
 
+    <com.legion.settings.preference.SecureSettingSwitchPreference
+	android:key="qs_show_drag_handle"
+	android:title="@string/qs_show_drag_handle_title"
+	android:summary="@string/qs_show_drag_handle_summary"
+	android:defaultValue="true" />
+
     <com.legion.settings.preference.SystemSettingSwitchPreference
 	android:key="setting_button_toggle"
 	android:title="@string/qs_settings_button_title"
