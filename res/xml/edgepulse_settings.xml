@@ -10,7 +10,7 @@
      See the License for the specific language governing permissions and
      limitations under the License.
 -->
-<preferencecreen
+<PreferenceScreen
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:title="@string/pulse_ambient_light_title"
     xmlns:settings="http://schemas.android.com/apk/res/com.android.settings">
@@ -33,7 +33,7 @@
         android:title="@string/ambient_notification_light_enabled_title"
         android:summary="@string/ambient_notification_light_enabled_sumary"
         android:defaultValue="false" />
-       
+
     <com.legion.settings.preference.SystemSettingSwitchPreference
         android:key="ambient_notification_light_hide_aod"
         android:title="@string/ambient_notification_light_hide_aod_title"
@@ -41,7 +41,7 @@
         android:dependency="ambient_notification_light_enabled"
         android:defaultValue="false" />
 
-    <com.legion.settings.preference.SystemSettingSwitchPreference
+    <com.legion.settings.preference.SystemSettingListPreference
         android:key="pulse_ambient_light_layout"
         android:title="@string/pulse_ambient_light_layout_title"
         android:entries="@array/pulse_ambient_light_layout_entries"
@@ -73,7 +73,7 @@
             android:dependency="pulse_ambient_light_auto_color_left"
             settings:defaultColorValue="0xFF3980FF" />
 
-        <com.legion.settings.preference.SystemSettingSwitchPreference
+        <com.legion.settings.preference.SystemSettingListPreference
             android:key="pulse_ambient_light_repeat_mode_left"
             android:title="@string/pulse_ambient_light_repeat_mode_title"
             android:entries="@array/pulse_ambient_light_anim_entries"
@@ -115,7 +115,7 @@
             android:dependency="pulse_ambient_light_auto_color_right"
             settings:defaultColorValue="0xFF3980FF" />
 
-        <com.legion.settings.preference.SystemSettingSwitchPreference
+        <com.legion.settings.preference.SystemSettingListPreference
             android:key="pulse_ambient_light_repeat_mode_right"
             android:title="@string/pulse_ambient_light_repeat_mode_title"
             android:entries="@array/pulse_ambient_light_anim_entries"
@@ -131,4 +131,4 @@
             settings:interval="250"
             settings:units="ms" />
     </PreferenceCategory>
-</preferencecreen>
+</PreferenceScreen>
