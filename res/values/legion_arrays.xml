@@ -937,6 +937,7 @@
         <item>2</item>
         <item>1</item>
         <item>0</item>
+    </string-array>
 
     <!-- Edge light Animation -->
     <string-array name="pulse_ambient_light_anim_entries">
