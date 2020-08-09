@@ -23,6 +23,9 @@ import android.os.UserHandle;
 import android.provider.SearchIndexableResource;
 import android.provider.Settings;
 
+import com.legion.settings.preference.CustomSeekBarPreference;
+import com.legion.settings.preference.SystemSettingSwitchPreference;
+
 import androidx.preference.ListPreference;
 import androidx.preference.SwitchPreference;
 import androidx.preference.Preference;
@@ -40,8 +43,11 @@ import com.android.internal.logging.nano.MetricsProto;
 import java.util.ArrayList;
 import java.util.List;
 
-public class StatusbarSettings extends SettingsPreferenceFragment implements
-        Indexable {
+public class StatusbarSettings extends SettingsPreferenceFragment implements OnPreferenceChangeListener, Indexable {
+
+    private static final String SHOW_LTE_FOURGEE = "show_lte_fourgee";
+
+    private SwitchPreference mShowLteFourGee;
 
     @Override
     public void onCreate(Bundle icicle) {
@@ -49,12 +55,29 @@ public class StatusbarSettings extends SettingsPreferenceFragment implements
         addPreferencesFromResource(R.xml.statusbar_settings);
         PreferenceScreen prefSet = getPreferenceScreen();
 
+        mShowLteFourGee = (SwitchPreference) findPreference(SHOW_LTE_FOURGEE);
+        mShowLteFourGee.setChecked((Settings.System.getInt(getContentResolver(),
+                Settings.System.SHOW_LTE_FOURGEE, 0) == 1));
+        mShowLteFourGee.setOnPreferenceChangeListener(this);
     }
 
-    @Override
+   @Override
     public int getMetricsCategory() {
         return MetricsProto.MetricsEvent.LEGION_SETTINGS;
     }
+
+    @Override
+    public boolean onPreferenceChange(Preference preference, Object objValue) {
+
+	if (preference == mShowLteFourGee) {
+            boolean value = (Boolean) objValue;
+            Settings.System.putInt(getActivity().getContentResolver(),
+                    Settings.System.SHOW_LTE_FOURGEE, value ? 1 : 0);
+            return true;
+        }
+        return false;
+    }
+
 
     public static final Indexable.SearchIndexProvider SEARCH_INDEX_DATA_PROVIDER =
             new BaseSearchIndexProvider() {
