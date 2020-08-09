@@ -214,8 +214,8 @@
     <string name="custom_text_clock_font_size_title">Typography Clock size</string>
 
     <!-- 4G icon -->
-    <string name="show_fourg_icon_title">4G icon</string>
-    <string name="show_fourg_icon_summary">Display 4G icon in signal icon instead LTE</string>
+    <string name="show_lte_fourgee_title">4G icon</string>
+    <string name="show_lte_fourgee_summary">Display 4G icon in signal icon instead LTE</string>
 
    <!-- Lockscreen battery info indicator -->
     <string name="lockscreen_battery_info_title">Lockscreen charging info</string>
@@ -963,7 +963,7 @@
     <string name="volte_icon_summary">Display VoLTE icon</string>
     <string name="volte_icon_style_title">Select VoLTE Icon</string>
     <string name="volte_icon_asus">VoLTE Asus Icon</string>
-    <string name="volte_icon_vo">Colt Default</string>
+    <string name="volte_icon_vo">Legion Default</string>
     <string name="volte_icon_volte">VoLTE Icon</string>
     <string name="volte_icon_oos">VoLTE OOS Icon</string>
     <string name="volte_icon_hd">HD Icon</string>
